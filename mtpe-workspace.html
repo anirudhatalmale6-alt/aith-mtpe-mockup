@@ -1,0 +1,1558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Translation Hub — MTPE Workspace</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap');
+
+  :root {
+    --navy: #001F3F;
+    --navy-deep: #00152B;
+    --navy-mid: #0A2A4A;
+    --navy-light: #163756;
+    --gold: #D4AF37;
+    --gold-soft: #E2C55C;
+    --gold-pale: #FDF8E8;
+    --gold-dim: rgba(212,175,55,0.10);
+    --gold-underline: rgba(212,175,55,0.35);
+    --white: #FFFFFF;
+    --off-white: #FAFBFC;
+    --gray-25: #F7F8FA;
+    --gray-50: #F0F2F5;
+    --gray-100: #E4E7EC;
+    --gray-200: #C8CED8;
+    --gray-300: #9BA5B4;
+    --gray-400: #6E7888;
+    --gray-500: #4A5568;
+    --gray-600: #3D4A5C;
+    --gray-700: #2D3748;
+    --gray-900: #0F1419;
+    --green: #0D9668;
+    --green-soft: #10B981;
+    --green-bg: #F0FDF8;
+    --green-border: #A7F3D0;
+    --green-badge: #065F46;
+    --blue: #2563EB;
+    --blue-bg: #EFF6FF;
+    --blue-border: #BFDBFE;
+    --blue-badge: #1E40AF;
+    --red: #DC2626;
+    --red-bg: #FFF5F5;
+    --red-border: #FECACA;
+    --amber: #D97706;
+    --amber-bg: #FFFBEB;
+    --source-bg: #F5F7FA;
+    --target-bg: #FFFFFF;
+    --segment-border: #E8EBF0;
+    --font-ui: 'Instrument Sans', -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'SF Mono', monospace;
+    --font-text: 'Newsreader', Georgia, serif;
+    --topbar-h: 46px;
+    --subbar-h: 36px;
+    --sidebar-l: 224px;
+    --sidebar-r: 268px;
+    --radius-sm: 3px;
+    --radius-md: 5px;
+    --radius-lg: 8px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+    --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-active: 0 2px 12px rgba(212,175,55,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  *:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+  body {
+    font-family: var(--font-ui);
+    background: var(--gray-25);
+    color: var(--gray-900);
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+    height: 100vh;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* ════════════ TOP BAR ════════════ */
+  .topbar {
+    height: var(--topbar-h);
+    background: var(--navy);
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 10px;
+    position: relative;
+    z-index: 100;
+  }
+  .topbar::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1.5px;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold-soft) 35%, transparent 65%);
+    opacity: 0.6;
+  }
+  .tb-logo {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--white);
+    font-weight: 700; font-size: 12.5px;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    padding-right: 12px;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    flex-shrink: 0;
+  }
+  .tb-logo-mark {
+    width: 22px; height: 22px;
+    background: var(--gold);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800; color: var(--navy);
+    font-family: var(--font-mono);
+  }
+  .tb-project {
+    color: rgba(255,255,255,0.8);
+    font-size: 12px; font-weight: 500;
+    padding: 0 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+  }
+  .tb-lang {
+    display: flex; align-items: center; gap: 5px;
+    background: var(--navy-mid);
+    padding: 3px 9px;
+    border-radius: var(--radius-sm);
+    color: rgba(255,255,255,0.85);
+    font-size: 11px; font-weight: 500;
+    flex-shrink: 0;
+  }
+  .tb-lang-arrow { color: var(--gold); font-size: 10px; }
+  .tb-progress {
+    display: flex; align-items: center; gap: 8px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .tb-progress-bar {
+    width: 100px; height: 4px;
+    background: var(--navy-light);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .tb-progress-fill {
+    height: 100%;
+    width: 68%;
+    background: linear-gradient(90deg, var(--green-soft), var(--gold-soft));
+    border-radius: 2px;
+  }
+  .tb-progress-text {
+    color: rgba(255,255,255,0.6);
+    font-size: 10.5px;
+    font-weight: 500;
+    font-family: var(--font-mono);
+    white-space: nowrap;
+  }
+  .tb-goto {
+    display: flex; align-items: center; gap: 3px;
+    flex-shrink: 0;
+  }
+  .tb-goto input {
+    width: 36px; height: 22px;
+    background: var(--navy-mid);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-sm);
+    color: rgba(255,255,255,0.8);
+    font-size: 10px; font-family: var(--font-mono);
+    text-align: center;
+    padding: 0;
+  }
+  .tb-goto input::placeholder { color: rgba(255,255,255,0.3); }
+  .tb-goto-label {
+    color: rgba(255,255,255,0.35);
+    font-size: 9px; font-family: var(--font-mono);
+  }
+  .tb-engine {
+    display: flex; align-items: center; gap: 4px;
+    background: rgba(255,255,255,0.07);
+    padding: 3px 7px;
+    border-radius: var(--radius-sm);
+    color: rgba(255,255,255,0.65);
+    font-size: 10px; font-weight: 600;
+    font-family: var(--font-mono);
+    flex-shrink: 0;
+  }
+  .tb-engine-dot { width: 5px; height: 5px; background: var(--green-soft); border-radius: 50%; }
+  .tb-save {
+    color: var(--green-soft);
+    font-size: 10px; font-weight: 500;
+    display: flex; align-items: center; gap: 3px;
+    flex-shrink: 0;
+    opacity: 0.8;
+  }
+  .tb-save svg { width: 10px; height: 10px; }
+  .tb-export-wrap { position: relative; flex-shrink: 0; }
+  .tb-export {
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    padding: 4px 10px 4px 9px;
+    border-radius: var(--radius-sm);
+    font-size: 10.5px; font-weight: 700;
+    font-family: var(--font-ui);
+    cursor: pointer;
+    display: flex; align-items: center; gap: 5px;
+    transition: all 0.12s;
+    letter-spacing: 0.01em;
+  }
+  .tb-export:hover { background: var(--gold-soft); }
+  .tb-export svg { width: 10px; height: 10px; }
+  .tb-export-arrow { font-size: 8px; margin-left: 2px; }
+  .export-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    background: var(--white);
+    border: 1px solid var(--gray-100);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    min-width: 160px;
+    z-index: 200;
+    padding: 4px 0;
+  }
+  .export-dropdown.show { display: block; }
+  .export-dropdown a {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 12px;
+    color: var(--gray-700);
+    text-decoration: none;
+    font-size: 11.5px; font-weight: 500;
+    transition: background 0.1s;
+  }
+  .export-dropdown a:hover { background: var(--gray-50); }
+  .export-dropdown a svg { width: 13px; height: 13px; color: var(--gray-400); flex-shrink: 0; }
+  .export-dropdown .sep { height: 1px; background: var(--gray-100); margin: 3px 0; }
+  .tb-avatar {
+    width: 24px; height: 24px;
+    background: var(--navy-light);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold);
+    font-size: 9px; font-weight: 700;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  /* ════════════ SUB BAR ════════════ */
+  .subbar {
+    height: var(--subbar-h);
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-100);
+    display: flex; align-items: center;
+    padding: 0 14px;
+    gap: 6px;
+  }
+  .subbar-label {
+    font-size: 9.5px; font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gray-300);
+    padding-right: 4px;
+  }
+  .filter-btn {
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 10.5px; font-weight: 500;
+    color: var(--gray-500);
+    background: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: var(--font-ui);
+    transition: all 0.1s;
+    display: flex; align-items: center; gap: 3px;
+  }
+  .filter-btn:hover { background: var(--gray-50); }
+  .filter-btn.active { background: var(--navy); color: var(--white); }
+  .filter-count { font-size: 9px; font-family: var(--font-mono); opacity: 0.6; }
+  .subbar-sep { width: 1px; height: 16px; background: var(--gray-100); margin: 0 3px; }
+  .subbar-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .subbar-search {
+    display: flex; align-items: center; gap: 4px;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-100);
+    border-radius: var(--radius-sm);
+    padding: 2px 7px;
+  }
+  .subbar-search svg { width: 11px; height: 11px; color: var(--gray-300); flex-shrink: 0; }
+  .subbar-search input {
+    border: none; background: none;
+    font-size: 10.5px; font-family: var(--font-ui);
+    color: var(--gray-700);
+    width: 90px;
+    outline: none;
+  }
+  .subbar-search input::placeholder { color: var(--gray-300); }
+  .subbar-sort {
+    font-size: 10.5px; color: var(--gray-400);
+    background: none; border: 1px solid var(--gray-100);
+    border-radius: var(--radius-sm);
+    padding: 2px 7px;
+    cursor: pointer; font-family: var(--font-ui);
+  }
+
+  /* ════════════ LAYOUT ════════════ */
+  .workspace {
+    display: flex;
+    height: calc(100vh - var(--topbar-h) - var(--subbar-h));
+  }
+
+  /* ════════════ LEFT SIDEBAR ════════════ */
+  .sidebar-l {
+    width: var(--sidebar-l);
+    background: var(--white);
+    border-right: 1px solid var(--gray-100);
+    display: flex; flex-direction: column;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  .sl-section {
+    padding: 12px;
+    border-bottom: 1px solid var(--gray-50);
+  }
+  .sl-title {
+    font-size: 9.5px; font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--gray-300);
+    margin-bottom: 8px;
+  }
+  .sl-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .sl-stat {
+    background: var(--gray-25);
+    border: 1px solid var(--gray-50);
+    border-radius: var(--radius-md);
+    padding: 7px 8px;
+    text-align: center;
+  }
+  .sl-stat-val {
+    font-size: 15px; font-weight: 700;
+    font-family: var(--font-mono);
+    color: var(--navy);
+    line-height: 1.2;
+  }
+  .sl-stat-val.gold { color: var(--gold); }
+  .sl-stat-label {
+    font-size: 8.5px; font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--gray-400);
+    margin-top: 1px;
+  }
+  .sl-progress-ring {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 8px;
+  }
+  .ring-wrap {
+    width: 48px; height: 48px; position: relative; flex-shrink: 0;
+  }
+  .ring-wrap svg { width: 48px; height: 48px; transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: var(--gray-100); stroke-width: 3.5; }
+  .ring-fill { fill: none; stroke: var(--gold); stroke-width: 3.5; stroke-linecap: round; stroke-dasharray: 125.6; stroke-dashoffset: 40.2; transition: stroke-dashoffset 0.6s ease; }
+  .ring-text {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    font-family: var(--font-mono);
+    color: var(--navy);
+  }
+  .ring-detail { font-size: 11px; color: var(--gray-500); line-height: 1.4; }
+  .ring-detail strong { color: var(--navy); font-weight: 600; }
+
+  /* Shortcuts */
+  .sl-shortcuts { display: flex; flex-direction: column; gap: 3px; }
+  .sl-shortcut {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 2px 0;
+  }
+  .sl-shortcut-keys {
+    display: flex; gap: 2px;
+  }
+  .sl-key {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-100);
+    border-radius: 2px;
+    padding: 0px 4px;
+    font-size: 9px; font-weight: 600;
+    font-family: var(--font-mono);
+    color: var(--gray-600);
+    line-height: 16px;
+  }
+  .sl-shortcut-desc {
+    font-size: 10px; color: var(--gray-400);
+    text-align: right;
+  }
+
+  /* ════════════ MAIN EDITOR ════════════ */
+  .main {
+    flex: 1;
+    display: flex; flex-direction: column;
+    min-width: 0;
+    background: var(--off-white);
+  }
+  .seg-header {
+    display: grid;
+    grid-template-columns: 28px 32px 1fr 1fr 52px 80px;
+    align-items: center;
+    height: 28px;
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-100);
+    padding: 0 0 0 4px;
+    gap: 0;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .seg-header span {
+    font-size: 9px; font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--gray-300);
+    padding: 0 6px;
+  }
+  .seg-header .sh-source { display: flex; align-items: center; gap: 4px; }
+  .seg-header .sh-source svg { width: 9px; height: 9px; color: var(--gray-300); }
+  .seg-header .sh-target { display: flex; align-items: center; gap: 4px; }
+  .seg-header .sh-target svg { width: 9px; height: 9px; color: var(--gray-400); }
+  .seg-list {
+    flex: 1;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+  }
+
+  /* Segment Row */
+  .seg {
+    display: grid;
+    grid-template-columns: 28px 32px 1fr 1fr 52px 80px;
+    border-bottom: 1px solid var(--segment-border);
+    position: relative;
+    transition: background 0.1s;
+    min-height: 48px;
+  }
+  .seg::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+    transition: background 0.15s;
+  }
+  .seg:hover { background: rgba(0,0,0,0.008); }
+
+  /* Status variants */
+  .seg.approved::before { background: var(--green); }
+  .seg.approved { background: var(--green-bg); }
+  .seg.approved:hover { background: #E8FBF2; }
+  .seg.reviewed::before { background: var(--blue); }
+  .seg.flagged::before { background: var(--red); }
+  .seg.flagged { background: var(--red-bg); }
+  .seg.flagged:hover { background: #FFF0F0; }
+  .seg.active::before { background: var(--gold); width: 3px; }
+  .seg.active {
+    background: var(--gold-pale);
+    box-shadow: var(--shadow-active);
+    z-index: 2;
+    position: relative;
+  }
+
+  .seg-check {
+    display: flex; align-items: flex-start; justify-content: center;
+    padding-top: 14px;
+  }
+  .seg-check input[type="checkbox"] {
+    width: 13px; height: 13px;
+    accent-color: var(--navy);
+    cursor: pointer;
+    opacity: 0.4;
+    transition: opacity 0.1s;
+  }
+  .seg:hover .seg-check input[type="checkbox"],
+  .seg-check input[type="checkbox"]:checked { opacity: 1; }
+
+  .seg-num {
+    display: flex; align-items: flex-start;
+    padding-top: 12px;
+    justify-content: center;
+    font-size: 10px; font-weight: 600;
+    font-family: var(--font-mono);
+    color: var(--gray-300);
+    cursor: pointer;
+  }
+  .seg-num:hover { color: var(--gold); }
+
+  .seg-source {
+    padding: 10px 10px 4px 10px;
+    background: var(--source-bg);
+    border-right: 1px solid var(--segment-border);
+    border-left: 1px solid var(--segment-border);
+    font-family: var(--font-text);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-700);
+    position: relative;
+  }
+  .seg.active .seg-source { background: #FAF6E8; }
+  .seg.approved .seg-source { background: #F2FAF6; }
+  .seg.flagged .seg-source { background: #FDF5F5; }
+
+  .seg-target {
+    padding: 10px 10px 4px 10px;
+    background: var(--target-bg);
+    font-family: var(--font-text);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-900);
+    border-right: 1px solid var(--segment-border);
+    position: relative;
+  }
+  .seg.active .seg-target { background: #FFFDF5; }
+
+  /* Editable target for active segment */
+  .seg-target-edit {
+    width: 100%;
+    min-height: 32px;
+    border: 1px solid var(--gold);
+    border-radius: var(--radius-sm);
+    padding: 6px 8px;
+    font-family: var(--font-text);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--gray-900);
+    background: var(--white);
+    outline: none;
+    resize: none;
+    box-shadow: 0 0 0 2px rgba(212,175,55,0.12);
+    display: block;
+  }
+
+  /* Glossary highlight in source */
+  .gl-term {
+    border-bottom: 1.5px solid var(--gold-underline);
+    cursor: help;
+    position: relative;
+  }
+  .gl-term:hover { background: var(--gold-dim); border-radius: 1px; }
+  .gl-term::after {
+    content: attr(data-translation);
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--navy);
+    color: var(--gold);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 9.5px;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+    z-index: 50;
+  }
+  .gl-term:hover::after { opacity: 1; }
+
+  /* Metadata line beneath each segment */
+  .seg-meta {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px 5px 64px;
+    font-size: 9px;
+    font-family: var(--font-mono);
+    color: var(--gray-300);
+    background: inherit;
+  }
+  .seg.active .seg-meta { background: var(--gold-pale); }
+  .seg.approved .seg-meta { background: var(--green-bg); }
+  .seg.flagged .seg-meta { background: var(--red-bg); }
+  .seg-meta-dot { color: var(--gray-200); }
+  .seg-meta .warn { color: var(--amber); font-weight: 600; }
+
+  .seg-status {
+    display: flex; align-items: flex-start;
+    padding-top: 11px;
+    justify-content: center;
+  }
+  .status-badge {
+    padding: 1px 5px;
+    border-radius: 2px;
+    font-size: 8.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .badge-draft { background: var(--gray-50); color: var(--gray-400); border: 1px solid var(--gray-100); }
+  .badge-reviewed { background: var(--blue-bg); color: var(--blue-badge); border: 1px solid var(--blue-border); }
+  .badge-approved { background: var(--green-bg); color: var(--green-badge); border: 1px solid var(--green-border); }
+  .badge-flagged { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+
+  .tm-badge {
+    display: inline-flex; align-items: center;
+    padding: 0px 4px;
+    border-radius: 2px;
+    font-size: 8px; font-weight: 700;
+    font-family: var(--font-mono);
+    margin-top: 3px;
+  }
+  .tm-badge.tm { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(212,175,55,0.2); }
+  .tm-badge.mt { background: var(--gray-50); color: var(--gray-400); border: 1px solid var(--gray-100); }
+
+  .seg-actions {
+    display: flex; align-items: flex-start;
+    padding-top: 9px;
+    gap: 2px;
+    justify-content: center;
+  }
+  .seg-action {
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--gray-300);
+    transition: all 0.1s;
+  }
+  .seg-action svg { width: 12px; height: 12px; }
+  .seg-action.act-approve:hover { background: var(--green-bg); color: var(--green); }
+  .seg-action.act-flag:hover { background: var(--amber-bg); color: var(--amber); }
+  .seg-action.act-revert:hover { background: var(--gray-50); color: var(--gray-600); }
+  .seg.approved .seg-action.act-approve { color: var(--green); }
+
+  /* ════════════ RIGHT SIDEBAR ════════════ */
+  .sidebar-r {
+    width: var(--sidebar-r);
+    background: var(--white);
+    border-left: 1px solid var(--gray-100);
+    display: flex; flex-direction: column;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .sr-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--gray-100);
+    background: var(--gray-25);
+    flex-shrink: 0;
+  }
+  .sr-tab {
+    flex: 1;
+    padding: 7px 0;
+    text-align: center;
+    font-size: 9.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--gray-400);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.12s;
+    background: none; border-top: none; border-left: none; border-right: none;
+    font-family: var(--font-ui);
+  }
+  .sr-tab:hover { color: var(--gray-600); }
+  .sr-tab.active { color: var(--navy); border-bottom-color: var(--gold); background: var(--white); }
+  .sr-panel {
+    display: none;
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+  }
+  .sr-panel.active { display: block; }
+
+  /* TM Matches */
+  .tm-match {
+    background: var(--gray-25);
+    border: 1px solid var(--gray-100);
+    border-radius: var(--radius-md);
+    padding: 8px;
+    margin-bottom: 6px;
+    position: relative;
+    transition: border-color 0.1s;
+  }
+  .tm-match:hover { border-color: var(--gold); }
+  .tm-match-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 5px;
+  }
+  .tm-match-pct {
+    font-size: 11px; font-weight: 700;
+    font-family: var(--font-mono);
+    color: var(--navy);
+  }
+  .tm-match-pct.high { color: var(--green); }
+  .tm-match-source-label {
+    font-size: 8.5px; font-weight: 500;
+    color: var(--gray-300);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .tm-match-text {
+    font-family: var(--font-text);
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: var(--gray-600);
+    margin-bottom: 4px;
+  }
+  .tm-match-target {
+    font-family: var(--font-text);
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: var(--gray-900);
+    font-weight: 500;
+    margin-bottom: 6px;
+    padding: 4px 6px;
+    background: var(--white);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-50);
+  }
+  .tm-diff-add { background: #D1FAE5; border-radius: 1px; padding: 0 1px; }
+  .tm-diff-del { background: #FECACA; border-radius: 1px; padding: 0 1px; text-decoration: line-through; color: var(--gray-400); }
+  .tm-match-footer {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .tm-insert-btn {
+    display: flex; align-items: center; gap: 4px;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 9.5px; font-weight: 600;
+    font-family: var(--font-ui);
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+  .tm-insert-btn:hover { background: var(--navy-mid); }
+  .tm-insert-key {
+    font-size: 8px; font-family: var(--font-mono);
+    background: rgba(255,255,255,0.15);
+    padding: 0 3px;
+    border-radius: 2px;
+    color: var(--gold);
+  }
+  .tm-match-project {
+    font-size: 8.5px;
+    color: var(--gray-300);
+    font-family: var(--font-mono);
+  }
+
+  /* Glossary */
+  .gl-grid { display: flex; flex-direction: column; gap: 3px; }
+  .gl-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 5px 7px;
+    border-radius: var(--radius-sm);
+    background: var(--gray-25);
+    border: 1px solid var(--gray-50);
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+  .gl-row:hover { border-color: var(--gold); background: var(--gold-pale); }
+  .gl-en {
+    font-size: 11px; font-weight: 600;
+    color: var(--gray-700);
+  }
+  .gl-arrow { color: var(--gray-300); font-size: 10px; }
+  .gl-es {
+    font-size: 11px; font-weight: 600;
+    color: var(--navy);
+    font-style: italic;
+    font-family: var(--font-text);
+  }
+
+  /* Context panel */
+  .ctx-seg {
+    padding: 7px 8px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-100);
+    margin-bottom: 5px;
+  }
+  .ctx-seg.ctx-current { border-color: var(--gold); background: var(--gold-pale); }
+  .ctx-seg-num {
+    font-size: 8.5px; font-weight: 700;
+    font-family: var(--font-mono);
+    color: var(--gray-300);
+    margin-bottom: 3px;
+  }
+  .ctx-seg-num.current { color: var(--gold); }
+  .ctx-text {
+    font-family: var(--font-text);
+    font-size: 10.5px;
+    line-height: 1.4;
+    color: var(--gray-600);
+  }
+  .ctx-text.target { color: var(--gray-900); font-weight: 500; margin-top: 2px; }
+
+  /* Comments */
+  .comment {
+    padding: 7px 0;
+    border-bottom: 1px solid var(--gray-50);
+  }
+  .comment:last-of-type { border-bottom: none; }
+  .comment-header {
+    display: flex; align-items: center; gap: 5px;
+    margin-bottom: 3px;
+  }
+  .comment-avatar {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--navy-light);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--white);
+    font-size: 7.5px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .comment-name { font-size: 10.5px; font-weight: 600; color: var(--gray-700); }
+  .comment-time { font-size: 9px; color: var(--gray-300); font-family: var(--font-mono); margin-left: auto; }
+  .comment-body { font-size: 11px; color: var(--gray-500); line-height: 1.45; padding-left: 23px; }
+  .comment-input {
+    display: flex; gap: 5px;
+    margin-top: 8px;
+  }
+  .comment-input input {
+    flex: 1;
+    border: 1px solid var(--gray-100);
+    border-radius: var(--radius-sm);
+    padding: 5px 7px;
+    font-size: 10.5px;
+    font-family: var(--font-ui);
+    color: var(--gray-700);
+    outline: none;
+  }
+  .comment-input input:focus { border-color: var(--gold); }
+  .comment-input button {
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    padding: 0 8px;
+    border-radius: var(--radius-sm);
+    font-size: 10px; font-weight: 600;
+    cursor: pointer;
+    font-family: var(--font-ui);
+  }
+
+  /* Quality Score */
+  .quality-section {
+    padding: 10px;
+    border-top: 1px solid var(--gray-100);
+    flex-shrink: 0;
+  }
+  .quality-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .quality-title {
+    font-size: 9.5px; font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--gray-300);
+  }
+  .quality-score {
+    font-size: 16px; font-weight: 800;
+    font-family: var(--font-mono);
+    color: var(--green);
+  }
+  .quality-score span { font-size: 10px; color: var(--gray-300); font-weight: 500; }
+  .quality-bars { display: flex; flex-direction: column; gap: 4px; }
+  .qb-row { display: flex; align-items: center; gap: 6px; }
+  .qb-label { font-size: 9px; font-weight: 500; color: var(--gray-400); width: 62px; }
+  .qb-bar { flex: 1; height: 4px; background: var(--gray-100); border-radius: 2px; overflow: hidden; }
+  .qb-fill { height: 100%; border-radius: 2px; transition: width 0.4s ease; }
+  .qb-fill.green { background: var(--green); }
+  .qb-fill.blue { background: var(--blue); }
+  .qb-fill.amber { background: var(--amber); }
+  .qb-val { font-size: 9px; font-family: var(--font-mono); font-weight: 600; color: var(--gray-500); width: 20px; text-align: right; }
+
+  /* ════════════ BATCH BAR ════════════ */
+  .batch-bar {
+    display: none;
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--navy);
+    color: var(--white);
+    padding: 8px 16px;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 20px rgba(0,31,63,0.3);
+    z-index: 300;
+    align-items: center;
+    gap: 12px;
+    font-size: 11.5px; font-weight: 500;
+    animation: slideUp 0.2s ease;
+  }
+  .batch-bar.show { display: flex; }
+  @keyframes slideUp {
+    from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+  }
+  .batch-count {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .batch-btn {
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 10.5px; font-weight: 600;
+    border: 1px solid rgba(255,255,255,0.2);
+    cursor: pointer;
+    font-family: var(--font-ui);
+    transition: all 0.1s;
+    background: none;
+    color: var(--white);
+  }
+  .batch-btn.approve { background: var(--green); border-color: var(--green); }
+  .batch-btn.approve:hover { background: var(--green-soft); }
+  .batch-btn.flag { background: none; border-color: var(--amber); color: var(--amber); }
+  .batch-btn.flag:hover { background: rgba(217,119,6,0.15); }
+
+  /* ════════════ ANIMATIONS ════════════ */
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .workspace { animation: fadeIn 0.3s ease; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gray-300); }
+</style>
+</head>
+<body>
+
+<!-- ════════════ TOP BAR ════════════ -->
+<div class="topbar">
+  <div class="tb-logo">
+    <div class="tb-logo-mark">AI</div>
+    <span>Translation Hub</span>
+  </div>
+  <div class="tb-project">WIB Portfolio ARM ERI</div>
+  <div class="tb-lang">
+    <span>EN</span>
+    <span class="tb-lang-arrow">&#9654;</span>
+    <span>ES</span>
+  </div>
+  <div class="tb-progress">
+    <div class="tb-progress-bar"><div class="tb-progress-fill"></div></div>
+    <div class="tb-progress-text">34/50 &middot; 68%</div>
+  </div>
+  <div class="tb-goto">
+    <input type="text" placeholder="#" title="Go to segment (Ctrl+G)">
+    <span class="tb-goto-label">Ctrl+G</span>
+  </div>
+  <div class="tb-engine">
+    <span class="tb-engine-dot"></span>
+    GPT-4o
+  </div>
+  <div class="tb-save">
+    <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zm3.2 5.3l-3.7 3.7a.5.5 0 01-.7 0L4.8 8a.5.5 0 01.7-.7l1.6 1.6 3.4-3.4a.5.5 0 01.7.7z"/></svg>
+    Saved
+  </div>
+  <div class="tb-export-wrap">
+    <button class="tb-export" onclick="document.querySelector('.export-dropdown').classList.toggle('show')">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a.5.5 0 01.5.5v8.8l2.6-2.6a.5.5 0 01.7.7l-3.5 3.5a.5.5 0 01-.7 0L4.1 8.4a.5.5 0 11.7-.7L7.5 10.3V1.5A.5.5 0 018 1zM2 13.5a.5.5 0 01.5-.5h11a.5.5 0 010 1h-11a.5.5 0 01-.5-.5z"/></svg>
+      Export
+      <span class="tb-export-arrow">&#9662;</span>
+    </button>
+    <div class="export-dropdown">
+      <a href="#">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 0a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V4.5L9.5 0H4zm5.5 1.5v2a1 1 0 001 1h2l-3-3zM6 7h4a.5.5 0 010 1H6a.5.5 0 010-1zm0 2h4a.5.5 0 010 1H6a.5.5 0 010-1z"/></svg>
+        Export DOCX
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 2a2 2 0 012-2h4.5L14 5.5V14a2 2 0 01-2 2H4a2 2 0 01-2-2V2zm6.5 0v3a1 1 0 001 1h3L8.5 2zM5 8a.5.5 0 000 1h2v2a.5.5 0 001 0V9h2a.5.5 0 000-1H8V6a.5.5 0 00-1 0v2H5z"/></svg>
+        Export Bilingual
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M0 4a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H2a2 2 0 01-2-2V4zm5 1a.5.5 0 00-.5.5v5a.5.5 0 001 0V5.5A.5.5 0 005 5zm3 0a.5.5 0 00-.5.5v5a.5.5 0 001 0V5.5A.5.5 0 008 5zm3 0a.5.5 0 00-.5.5v5a.5.5 0 001 0V5.5A.5.5 0 0011 5z"/></svg>
+        Export TMX
+      </a>
+      <div class="sep"></div>
+      <a href="#">
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M10.5 8a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7z"/></svg>
+        Preview
+      </a>
+    </div>
+  </div>
+  <div class="tb-avatar">ET</div>
+</div>
+
+<!-- ════════════ SUB BAR ════════════ -->
+<div class="subbar">
+  <span class="subbar-label">Filter</span>
+  <button class="filter-btn active">All <span class="filter-count">50</span></button>
+  <button class="filter-btn">Draft <span class="filter-count">8</span></button>
+  <button class="filter-btn">Reviewed <span class="filter-count">8</span></button>
+  <button class="filter-btn">Approved <span class="filter-count">34</span></button>
+  <button class="filter-btn">Flagged <span class="filter-count">1</span></button>
+  <div class="subbar-sep"></div>
+  <div class="subbar-right">
+    <div class="subbar-search">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M11.7 10.3a6 6 0 10-1.4 1.4l3.8 3.8a1 1 0 001.4-1.4l-3.8-3.8zM6 10a4 4 0 110-8 4 4 0 010 8z"/></svg>
+      <input type="text" placeholder="Search segments...">
+    </div>
+    <select class="subbar-sort">
+      <option>Order: Default</option>
+      <option>By Status</option>
+      <option>By TM Match</option>
+      <option>By Word Count</option>
+    </select>
+  </div>
+</div>
+
+<!-- ════════════ WORKSPACE ════════════ -->
+<div class="workspace">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="sidebar-l">
+    <div class="sl-section">
+      <div class="sl-title">Project Stats</div>
+      <div class="sl-stats">
+        <div class="sl-stat">
+          <div class="sl-stat-val">2,847</div>
+          <div class="sl-stat-label">Words</div>
+        </div>
+        <div class="sl-stat">
+          <div class="sl-stat-val">50</div>
+          <div class="sl-stat-label">Segments</div>
+        </div>
+        <div class="sl-stat">
+          <div class="sl-stat-val gold">23%</div>
+          <div class="sl-stat-label">TM Hit Rate</div>
+        </div>
+        <div class="sl-stat">
+          <div class="sl-stat-val">1,482</div>
+          <div class="sl-stat-label">Billable</div>
+        </div>
+      </div>
+      <div class="sl-progress-ring">
+        <div class="ring-wrap">
+          <svg viewBox="0 0 44 44"><circle class="ring-bg" cx="22" cy="22" r="20"/><circle class="ring-fill" cx="22" cy="22" r="20"/></svg>
+          <div class="ring-text">68%</div>
+        </div>
+        <div class="ring-detail">
+          <strong>34</strong> approved<br>
+          <strong>8</strong> reviewed<br>
+          <strong>8</strong> draft
+        </div>
+      </div>
+    </div>
+    <div class="sl-section">
+      <div class="sl-title">Keyboard Shortcuts</div>
+      <div class="sl-shortcuts">
+        <div class="sl-shortcut">
+          <div class="sl-shortcut-keys"><span class="sl-key">Ctrl</span><span class="sl-key">Enter</span></div>
+          <div class="sl-shortcut-desc">Approve & next</div>
+        </div>
+        <div class="sl-shortcut">
+          <div class="sl-shortcut-keys"><span class="sl-key">Tab</span></div>
+          <div class="sl-shortcut-desc">Next segment</div>
+        </div>
+        <div class="sl-shortcut">
+          <div class="sl-shortcut-keys"><span class="sl-key">Shift</span><span class="sl-key">Tab</span></div>
+          <div class="sl-shortcut-desc">Previous</div>
+        </div>
+        <div class="sl-shortcut">
+          <div class="sl-shortcut-keys"><span class="sl-key">Ctrl</span><span class="sl-key">S</span></div>
+          <div class="sl-shortcut-desc">Save</div>
+        </div>
+        <div class="sl-shortcut">
+          <div class="sl-shortcut-keys"><span class="sl-key">Alt</span><span class="sl-key">1</span></div>
+          <div class="sl-shortcut-desc">Insert TM #1</div>
+        </div>
+        <div class="sl-shortcut">
+          <div class="sl-shortcut-keys"><span class="sl-key">Ctrl</span><span class="sl-key">G</span></div>
+          <div class="sl-shortcut-desc">Go to segment</div>
+        </div>
+        <div class="sl-shortcut">
+          <div class="sl-shortcut-keys"><span class="sl-key">Ctrl</span><span class="sl-key">F</span></div>
+          <div class="sl-shortcut-desc">Flag segment</div>
+        </div>
+        <div class="sl-shortcut">
+          <div class="sl-shortcut-keys"><span class="sl-key">Ctrl</span><span class="sl-key">Shift</span><span class="sl-key">A</span></div>
+          <div class="sl-shortcut-desc">Approve all</div>
+        </div>
+        <div class="sl-shortcut">
+          <div class="sl-shortcut-keys"><span class="sl-key">Esc</span></div>
+          <div class="sl-shortcut-desc">Cancel edit</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN EDITOR -->
+  <div class="main">
+    <div class="seg-header">
+      <span></span>
+      <span>#</span>
+      <span class="sh-source">Source (EN) <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a2 2 0 00-2 2v4.586l-.707-.707a1 1 0 00-1.414 1.414l2.5 2.5a1 1 0 001.414 0l2.5-2.5a1 1 0 00-1.414-1.414L8 7.586V3a2 2 0 00-2-2zm-4 9a1 1 0 100 2 1 1 0 000-2zm8 0a1 1 0 100 2 1 1 0 000-2z"/><path d="M11 4a1 1 0 011 1v2h2a1 1 0 010 2h-2v2a1 1 0 01-2 0V5a1 1 0 011-1zM4 0a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V5.5L9.5 0H4z"/></svg></span>
+      <span class="sh-target">Target (ES) <svg viewBox="0 0 16 16" fill="currentColor"><path d="M12.1 3.9a.5.5 0 010 .7L10.8 5.9l1.3 1.3a.5.5 0 11-.7.7L10 6.6 8.7 7.9a.5.5 0 01-.7-.7l1.3-1.3L8 4.6a.5.5 0 11.7-.7L10 5.2l1.3-1.3a.5.5 0 01.7 0z"/></svg></span>
+      <span>Status</span>
+      <span>Actions</span>
+    </div>
+    <div class="seg-list">
+
+      <!-- SEGMENT 1 - Approved -->
+      <div class="seg approved">
+        <div class="seg-check"><input type="checkbox"></div>
+        <div class="seg-num">01</div>
+        <div class="seg-source"><span class="gl-term" data-translation="Cartera">WIB Portfolio</span> Management provides comprehensive <span class="gl-term" data-translation="Inversión">investment</span> advisory services tailored to institutional and individual clients.</div>
+        <div class="seg-target">WIB Gesti&oacute;n de <span class="gl-term" data-translation="Cartera">Cartera</span> ofrece servicios integrales de asesor&iacute;a en inversiones adaptados a clientes institucionales e individuales.</div>
+        <div class="seg-status"><span class="status-badge badge-approved">&#10003; Appr</span></div>
+        <div class="seg-actions">
+          <button class="seg-action act-approve" title="Approve"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.5 2.5a.5.5 0 010 .7l-8 8a.5.5 0 01-.7 0l-3.5-3.5a.5.5 0 11.7-.7L5.1 10.1l7.6-7.6a.5.5 0 01.7 0z"/></svg></button>
+          <button class="seg-action act-flag" title="Flag"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1a.5.5 0 01.5.5v1h8.5a.5.5 0 01.4.8L10.2 7l2.7 3.7a.5.5 0 01-.4.8H4v4a.5.5 0 01-1 0V1.5a.5.5 0 01.5-.5z"/></svg></button>
+          <button class="seg-action act-revert" title="Revert"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3a5 5 0 11-4.5 2.8.5.5 0 00-.9-.5A6 6 0 108 2v1z"/><path d="M8 4.5V1L5.5 3.5 8 6V4.5z"/></svg></button>
+        </div>
+        <div class="seg-meta">
+          <span>Src: 16w</span><span class="seg-meta-dot">&middot;</span>
+          <span>Tgt: 18w</span><span class="seg-meta-dot">&middot;</span>
+          <span>5 min ago</span><span class="seg-meta-dot">&middot;</span>
+          <span class="tm-badge tm">92% TM</span>
+        </div>
+      </div>
+
+      <!-- SEGMENT 2 - Approved -->
+      <div class="seg approved">
+        <div class="seg-check"><input type="checkbox"></div>
+        <div class="seg-num">02</div>
+        <div class="seg-source">Our <span class="gl-term" data-translation="Inversión">investment</span> philosophy is grounded in rigorous fundamental analysis and <span class="gl-term" data-translation="Cuantitativo">quantitative</span> <span class="gl-term" data-translation="Riesgo">risk</span> assessment methodologies.</div>
+        <div class="seg-target">Nuestra filosof&iacute;a de inversi&oacute;n se fundamenta en un an&aacute;lisis fundamental riguroso y metodolog&iacute;as cuantitativas de evaluaci&oacute;n de riesgos.</div>
+        <div class="seg-status"><span class="status-badge badge-approved">&#10003; Appr</span></div>
+        <div class="seg-actions">
+          <button class="seg-action act-approve"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.5 2.5a.5.5 0 010 .7l-8 8a.5.5 0 01-.7 0l-3.5-3.5a.5.5 0 11.7-.7L5.1 10.1l7.6-7.6a.5.5 0 01.7 0z"/></svg></button>
+          <button class="seg-action act-flag"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1a.5.5 0 01.5.5v1h8.5a.5.5 0 01.4.8L10.2 7l2.7 3.7a.5.5 0 01-.4.8H4v4a.5.5 0 01-1 0V1.5a.5.5 0 01.5-.5z"/></svg></button>
+          <button class="seg-action act-revert"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3a5 5 0 11-4.5 2.8.5.5 0 00-.9-.5A6 6 0 108 2v1z"/><path d="M8 4.5V1L5.5 3.5 8 6V4.5z"/></svg></button>
+        </div>
+        <div class="seg-meta">
+          <span>Src: 17w</span><span class="seg-meta-dot">&middot;</span>
+          <span>Tgt: 18w</span><span class="seg-meta-dot">&middot;</span>
+          <span>5 min ago</span><span class="seg-meta-dot">&middot;</span>
+          <span class="tm-badge mt">MT</span>
+        </div>
+      </div>
+
+      <!-- SEGMENT 3 - Reviewed -->
+      <div class="seg reviewed">
+        <div class="seg-check"><input type="checkbox"></div>
+        <div class="seg-num">03</div>
+        <div class="seg-source">The ARM/ERI strategy seeks long-term <span class="gl-term" data-translation="Revalorización">capital appreciation</span> through diversified exposure to global <span class="gl-term" data-translation="Capital">equity</span>, fixed income, and alternative <span class="gl-term" data-translation="Activo">asset</span> classes.</div>
+        <div class="seg-target">La estrategia ARM/ERI busca la revalorizaci&oacute;n del capital a largo plazo mediante la exposici&oacute;n diversificada a clases de activos de renta variable global, renta fija y activos alternativos.</div>
+        <div class="seg-status"><span class="status-badge badge-reviewed">Review</span></div>
+        <div class="seg-actions">
+          <button class="seg-action act-approve"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.5 2.5a.5.5 0 010 .7l-8 8a.5.5 0 01-.7 0l-3.5-3.5a.5.5 0 11.7-.7L5.1 10.1l7.6-7.6a.5.5 0 01.7 0z"/></svg></button>
+          <button class="seg-action act-flag"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1a.5.5 0 01.5.5v1h8.5a.5.5 0 01.4.8L10.2 7l2.7 3.7a.5.5 0 01-.4.8H4v4a.5.5 0 01-1 0V1.5a.5.5 0 01.5-.5z"/></svg></button>
+          <button class="seg-action act-revert"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3a5 5 0 11-4.5 2.8.5.5 0 00-.9-.5A6 6 0 108 2v1z"/><path d="M8 4.5V1L5.5 3.5 8 6V4.5z"/></svg></button>
+        </div>
+        <div class="seg-meta">
+          <span>Src: 23w</span><span class="seg-meta-dot">&middot;</span>
+          <span>Tgt: 26w</span><span class="seg-meta-dot">&middot;</span>
+          <span>3 min ago</span><span class="seg-meta-dot">&middot;</span>
+          <span class="tm-badge tm">87% TM</span>
+        </div>
+      </div>
+
+      <!-- SEGMENT 4 - ACTIVE (being edited) -->
+      <div class="seg active" id="seg-4">
+        <div class="seg-check"><input type="checkbox"></div>
+        <div class="seg-num">04</div>
+        <div class="seg-source"><span class="gl-term" data-translation="Cartera">Portfolio</span> allocation is determined by a proprietary <span class="gl-term" data-translation="Riesgo">risk</span>-parity model that dynamically adjusts weights based on market volatility and macroeconomic indicators.</div>
+        <div class="seg-target">
+          <textarea class="seg-target-edit" rows="3">La asignaci&oacute;n de cartera se determina mediante un modelo propietario de paridad de riesgo que ajusta din&aacute;micamente las ponderaciones en funci&oacute;n de la volatilidad del mercado y los indicadores macroecon&oacute;micos.</textarea>
+        </div>
+        <div class="seg-status">
+          <span class="status-badge badge-draft">Draft</span>
+        </div>
+        <div class="seg-actions">
+          <button class="seg-action act-approve" title="Approve (Ctrl+Enter)"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.5 2.5a.5.5 0 010 .7l-8 8a.5.5 0 01-.7 0l-3.5-3.5a.5.5 0 11.7-.7L5.1 10.1l7.6-7.6a.5.5 0 01.7 0z"/></svg></button>
+          <button class="seg-action act-flag" title="Flag (Ctrl+F)"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1a.5.5 0 01.5.5v1h8.5a.5.5 0 01.4.8L10.2 7l2.7 3.7a.5.5 0 01-.4.8H4v4a.5.5 0 01-1 0V1.5a.5.5 0 01.5-.5z"/></svg></button>
+          <button class="seg-action act-revert" title="Revert"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3a5 5 0 11-4.5 2.8.5.5 0 00-.9-.5A6 6 0 108 2v1z"/><path d="M8 4.5V1L5.5 3.5 8 6V4.5z"/></svg></button>
+        </div>
+        <div class="seg-meta">
+          <span>Src: 22w</span><span class="seg-meta-dot">&middot;</span>
+          <span>Tgt: 27w</span><span class="seg-meta-dot">&middot;</span>
+          <span>Editing now</span><span class="seg-meta-dot">&middot;</span>
+          <span class="tm-badge tm">87% TM</span>
+        </div>
+      </div>
+
+      <!-- SEGMENT 5 - Draft -->
+      <div class="seg">
+        <div class="seg-check"><input type="checkbox"></div>
+        <div class="seg-num">05</div>
+        <div class="seg-source">As of Q3 2025, the Fund has achieved a cumulative <span class="gl-term" data-translation="Rendimiento">return</span> of 14.7%, outperforming the benchmark MSCI World Index by 320 basis points.</div>
+        <div class="seg-target">A partir del tercer trimestre de 2025, el Fondo ha logrado un rendimiento acumulado del 14,7%, superando el &iacute;ndice de referencia MSCI World en 320 puntos b&aacute;sicos.</div>
+        <div class="seg-status"><span class="status-badge badge-draft">Draft</span></div>
+        <div class="seg-actions">
+          <button class="seg-action act-approve"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.5 2.5a.5.5 0 010 .7l-8 8a.5.5 0 01-.7 0l-3.5-3.5a.5.5 0 11.7-.7L5.1 10.1l7.6-7.6a.5.5 0 01.7 0z"/></svg></button>
+          <button class="seg-action act-flag"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1a.5.5 0 01.5.5v1h8.5a.5.5 0 01.4.8L10.2 7l2.7 3.7a.5.5 0 01-.4.8H4v4a.5.5 0 01-1 0V1.5a.5.5 0 01.5-.5z"/></svg></button>
+          <button class="seg-action act-revert"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3a5 5 0 11-4.5 2.8.5.5 0 00-.9-.5A6 6 0 108 2v1z"/><path d="M8 4.5V1L5.5 3.5 8 6V4.5z"/></svg></button>
+        </div>
+        <div class="seg-meta">
+          <span>Src: 25w</span><span class="seg-meta-dot">&middot;</span>
+          <span>Tgt: 28w</span><span class="seg-meta-dot">&middot;</span>
+          <span>1 min ago</span><span class="seg-meta-dot">&middot;</span>
+          <span class="tm-badge mt">MT</span>
+        </div>
+      </div>
+
+      <!-- SEGMENT 6 - Approved -->
+      <div class="seg approved">
+        <div class="seg-check"><input type="checkbox"></div>
+        <div class="seg-num">06</div>
+        <div class="seg-source"><span class="gl-term" data-translation="Riesgo">Risk</span> management protocols include daily Value-at-<span class="gl-term" data-translation="Riesgo">Risk</span> calculations, stress testing, and continuous monitoring of counterparty exposure.</div>
+        <div class="seg-target">Los protocolos de gesti&oacute;n de riesgos incluyen c&aacute;lculos diarios de Valor en Riesgo, pruebas de estr&eacute;s y monitoreo continuo de la exposici&oacute;n a contrapartes.</div>
+        <div class="seg-status"><span class="status-badge badge-approved">&#10003; Appr</span></div>
+        <div class="seg-actions">
+          <button class="seg-action act-approve"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.5 2.5a.5.5 0 010 .7l-8 8a.5.5 0 01-.7 0l-3.5-3.5a.5.5 0 11.7-.7L5.1 10.1l7.6-7.6a.5.5 0 01.7 0z"/></svg></button>
+          <button class="seg-action act-flag"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1a.5.5 0 01.5.5v1h8.5a.5.5 0 01.4.8L10.2 7l2.7 3.7a.5.5 0 01-.4.8H4v4a.5.5 0 01-1 0V1.5a.5.5 0 01.5-.5z"/></svg></button>
+          <button class="seg-action act-revert"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3a5 5 0 11-4.5 2.8.5.5 0 00-.9-.5A6 6 0 108 2v1z"/><path d="M8 4.5V1L5.5 3.5 8 6V4.5z"/></svg></button>
+        </div>
+        <div class="seg-meta">
+          <span>Src: 19w</span><span class="seg-meta-dot">&middot;</span>
+          <span>Tgt: 21w</span><span class="seg-meta-dot">&middot;</span>
+          <span>8 min ago</span><span class="seg-meta-dot">&middot;</span>
+          <span class="tm-badge mt">MT</span>
+        </div>
+      </div>
+
+      <!-- SEGMENT 7 - Flagged -->
+      <div class="seg flagged">
+        <div class="seg-check"><input type="checkbox"></div>
+        <div class="seg-num">07</div>
+        <div class="seg-source">The allocation to emerging market <span class="gl-term" data-translation="Capital">equity</span> was increased from 12% to 18% following the revision of forward-looking <span class="gl-term" data-translation="Rendimiento">return</span> assumptions for the <span class="gl-term" data-translation="Activo">asset</span> class.</div>
+        <div class="seg-target">La asignaci&oacute;n a renta variable de mercados emergentes se increment&oacute; del 12% al 18% tras la revisi&oacute;n de las proyecciones de rendimiento para esta clase de activos.</div>
+        <div class="seg-status"><span class="status-badge badge-flagged">&#9873; Flag</span></div>
+        <div class="seg-actions">
+          <button class="seg-action act-approve"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.5 2.5a.5.5 0 010 .7l-8 8a.5.5 0 01-.7 0l-3.5-3.5a.5.5 0 11.7-.7L5.1 10.1l7.6-7.6a.5.5 0 01.7 0z"/></svg></button>
+          <button class="seg-action act-flag"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1a.5.5 0 01.5.5v1h8.5a.5.5 0 01.4.8L10.2 7l2.7 3.7a.5.5 0 01-.4.8H4v4a.5.5 0 01-1 0V1.5a.5.5 0 01.5-.5z"/></svg></button>
+          <button class="seg-action act-revert"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3a5 5 0 11-4.5 2.8.5.5 0 00-.9-.5A6 6 0 108 2v1z"/><path d="M8 4.5V1L5.5 3.5 8 6V4.5z"/></svg></button>
+        </div>
+        <div class="seg-meta">
+          <span>Src: 28w</span><span class="seg-meta-dot">&middot;</span>
+          <span>Tgt: 24w</span><span class="seg-meta-dot">&middot;</span>
+          <span class="warn">&#9888; -14% shorter</span><span class="seg-meta-dot">&middot;</span>
+          <span class="tm-badge tm">72% TM</span>
+        </div>
+      </div>
+
+      <!-- SEGMENT 8 - Approved -->
+      <div class="seg approved">
+        <div class="seg-check"><input type="checkbox"></div>
+        <div class="seg-num">08</div>
+        <div class="seg-source">Currency hedging is implemented selectively, using forward contracts and options to mitigate FX <span class="gl-term" data-translation="Riesgo">risk</span> in non-USD denominated holdings.</div>
+        <div class="seg-target">La cobertura cambiaria se implementa de manera selectiva, utilizando contratos a plazo y opciones para mitigar el riesgo cambiario en posiciones denominadas en monedas distintas al d&oacute;lar.</div>
+        <div class="seg-status"><span class="status-badge badge-approved">&#10003; Appr</span></div>
+        <div class="seg-actions">
+          <button class="seg-action act-approve"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.5 2.5a.5.5 0 010 .7l-8 8a.5.5 0 01-.7 0l-3.5-3.5a.5.5 0 11.7-.7L5.1 10.1l7.6-7.6a.5.5 0 01.7 0z"/></svg></button>
+          <button class="seg-action act-flag"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1a.5.5 0 01.5.5v1h8.5a.5.5 0 01.4.8L10.2 7l2.7 3.7a.5.5 0 01-.4.8H4v4a.5.5 0 01-1 0V1.5a.5.5 0 01.5-.5z"/></svg></button>
+          <button class="seg-action act-revert"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3a5 5 0 11-4.5 2.8.5.5 0 00-.9-.5A6 6 0 108 2v1z"/><path d="M8 4.5V1L5.5 3.5 8 6V4.5z"/></svg></button>
+        </div>
+        <div class="seg-meta">
+          <span>Src: 20w</span><span class="seg-meta-dot">&middot;</span>
+          <span>Tgt: 24w</span><span class="seg-meta-dot">&middot;</span>
+          <span>12 min ago</span><span class="seg-meta-dot">&middot;</span>
+          <span class="tm-badge mt">MT</span>
+        </div>
+      </div>
+
+      <!-- SEGMENT 9 - Reviewed -->
+      <div class="seg reviewed">
+        <div class="seg-check"><input type="checkbox"></div>
+        <div class="seg-num">09</div>
+        <div class="seg-source">The fixed income component is allocated across sovereign <span class="gl-term" data-translation="Bono">bonds</span>, investment-grade corporate debt, and high-yield instruments with a duration target of 4.2 years.</div>
+        <div class="seg-target">El componente de renta fija se distribuye entre bonos soberanos, deuda corporativa con grado de inversi&oacute;n e instrumentos de alto rendimiento con una duraci&oacute;n objetivo de 4,2 a&ntilde;os.</div>
+        <div class="seg-status"><span class="status-badge badge-reviewed">Review</span></div>
+        <div class="seg-actions">
+          <button class="seg-action act-approve"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.5 2.5a.5.5 0 010 .7l-8 8a.5.5 0 01-.7 0l-3.5-3.5a.5.5 0 11.7-.7L5.1 10.1l7.6-7.6a.5.5 0 01.7 0z"/></svg></button>
+          <button class="seg-action act-flag"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1a.5.5 0 01.5.5v1h8.5a.5.5 0 01.4.8L10.2 7l2.7 3.7a.5.5 0 01-.4.8H4v4a.5.5 0 01-1 0V1.5a.5.5 0 01.5-.5z"/></svg></button>
+          <button class="seg-action act-revert"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3a5 5 0 11-4.5 2.8.5.5 0 00-.9-.5A6 6 0 108 2v1z"/><path d="M8 4.5V1L5.5 3.5 8 6V4.5z"/></svg></button>
+        </div>
+        <div class="seg-meta">
+          <span>Src: 26w</span><span class="seg-meta-dot">&middot;</span>
+          <span>Tgt: 26w</span><span class="seg-meta-dot">&middot;</span>
+          <span>6 min ago</span><span class="seg-meta-dot">&middot;</span>
+          <span class="tm-badge tm">64% TM</span>
+        </div>
+      </div>
+
+      <!-- SEGMENT 10 - Approved -->
+      <div class="seg approved">
+        <div class="seg-check"><input type="checkbox"></div>
+        <div class="seg-num">10</div>
+        <div class="seg-source"><span class="gl-term" data-translation="Dividendo">Dividend</span> income and interest payments are reinvested automatically unless the client elects for quarterly distributions.</div>
+        <div class="seg-target">Los ingresos por dividendos y los pagos de intereses se reinvierten autom&aacute;ticamente, a menos que el cliente opte por distribuciones trimestrales.</div>
+        <div class="seg-status"><span class="status-badge badge-approved">&#10003; Appr</span></div>
+        <div class="seg-actions">
+          <button class="seg-action act-approve"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.5 2.5a.5.5 0 010 .7l-8 8a.5.5 0 01-.7 0l-3.5-3.5a.5.5 0 11.7-.7L5.1 10.1l7.6-7.6a.5.5 0 01.7 0z"/></svg></button>
+          <button class="seg-action act-flag"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1a.5.5 0 01.5.5v1h8.5a.5.5 0 01.4.8L10.2 7l2.7 3.7a.5.5 0 01-.4.8H4v4a.5.5 0 01-1 0V1.5a.5.5 0 01.5-.5z"/></svg></button>
+          <button class="seg-action act-revert"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3a5 5 0 11-4.5 2.8.5.5 0 00-.9-.5A6 6 0 108 2v1z"/><path d="M8 4.5V1L5.5 3.5 8 6V4.5z"/></svg></button>
+        </div>
+        <div class="seg-meta">
+          <span>Src: 17w</span><span class="seg-meta-dot">&middot;</span>
+          <span>Tgt: 19w</span><span class="seg-meta-dot">&middot;</span>
+          <span>15 min ago</span><span class="seg-meta-dot">&middot;</span>
+          <span class="tm-badge mt">MT</span>
+        </div>
+      </div>
+
+      <!-- SEGMENT 11 - Reviewed -->
+      <div class="seg reviewed">
+        <div class="seg-check"><input type="checkbox"></div>
+        <div class="seg-num">11</div>
+        <div class="seg-source">Environmental, Social, and Governance (ESG) criteria are integrated into the <span class="gl-term" data-translation="Inversión">investment</span> selection process in accordance with the UN Principles for Responsible <span class="gl-term" data-translation="Inversión">Investment</span>.</div>
+        <div class="seg-target">Los criterios Ambientales, Sociales y de Gobernanza (ASG) est&aacute;n integrados en el proceso de selecci&oacute;n de inversiones conforme a los Principios de Inversi&oacute;n Responsable de la ONU.</div>
+        <div class="seg-status"><span class="status-badge badge-reviewed">Review</span></div>
+        <div class="seg-actions">
+          <button class="seg-action act-approve"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.5 2.5a.5.5 0 010 .7l-8 8a.5.5 0 01-.7 0l-3.5-3.5a.5.5 0 11.7-.7L5.1 10.1l7.6-7.6a.5.5 0 01.7 0z"/></svg></button>
+          <button class="seg-action act-flag"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1a.5.5 0 01.5.5v1h8.5a.5.5 0 01.4.8L10.2 7l2.7 3.7a.5.5 0 01-.4.8H4v4a.5.5 0 01-1 0V1.5a.5.5 0 01.5-.5z"/></svg></button>
+          <button class="seg-action act-revert"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3a5 5 0 11-4.5 2.8.5.5 0 00-.9-.5A6 6 0 108 2v1z"/><path d="M8 4.5V1L5.5 3.5 8 6V4.5z"/></svg></button>
+        </div>
+        <div class="seg-meta">
+          <span>Src: 24w</span><span class="seg-meta-dot">&middot;</span>
+          <span>Tgt: 23w</span><span class="seg-meta-dot">&middot;</span>
+          <span>10 min ago</span><span class="seg-meta-dot">&middot;</span>
+          <span class="tm-badge mt">MT</span>
+        </div>
+      </div>
+
+      <!-- SEGMENT 12 - Draft -->
+      <div class="seg">
+        <div class="seg-check"><input type="checkbox"></div>
+        <div class="seg-num">12</div>
+        <div class="seg-source">Quarterly performance reports are distributed to all stakeholders within 15 business days following the end of each reporting period.</div>
+        <div class="seg-target">Los informes trimestrales de rendimiento se distribuyen a todos los interesados dentro de los 15 d&iacute;as h&aacute;biles posteriores al cierre de cada per&iacute;odo de reporte.</div>
+        <div class="seg-status"><span class="status-badge badge-draft">Draft</span></div>
+        <div class="seg-actions">
+          <button class="seg-action act-approve"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M13.5 2.5a.5.5 0 010 .7l-8 8a.5.5 0 01-.7 0l-3.5-3.5a.5.5 0 11.7-.7L5.1 10.1l7.6-7.6a.5.5 0 01.7 0z"/></svg></button>
+          <button class="seg-action act-flag"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 1a.5.5 0 01.5.5v1h8.5a.5.5 0 01.4.8L10.2 7l2.7 3.7a.5.5 0 01-.4.8H4v4a.5.5 0 01-1 0V1.5a.5.5 0 01.5-.5z"/></svg></button>
+          <button class="seg-action act-revert"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 3a5 5 0 11-4.5 2.8.5.5 0 00-.9-.5A6 6 0 108 2v1z"/><path d="M8 4.5V1L5.5 3.5 8 6V4.5z"/></svg></button>
+        </div>
+        <div class="seg-meta">
+          <span>Src: 18w</span><span class="seg-meta-dot">&middot;</span>
+          <span>Tgt: 22w</span><span class="seg-meta-dot">&middot;</span>
+          <span>Just now</span><span class="seg-meta-dot">&middot;</span>
+          <span class="tm-badge mt">MT</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div class="sidebar-r">
+    <div class="sr-tabs">
+      <button class="sr-tab active" onclick="switchTab(this, 'tab-tm')">TM</button>
+      <button class="sr-tab" onclick="switchTab(this, 'tab-glossary')">Glossary</button>
+      <button class="sr-tab" onclick="switchTab(this, 'tab-context')">Context</button>
+      <button class="sr-tab" onclick="switchTab(this, 'tab-comments')">Comments</button>
+    </div>
+
+    <!-- TM MATCHES -->
+    <div class="sr-panel active" id="tab-tm">
+      <div class="tm-match">
+        <div class="tm-match-header">
+          <span class="tm-match-pct high">87% Match</span>
+          <span class="tm-match-source-label">WIB Report 2024</span>
+        </div>
+        <div class="tm-match-text"><span class="gl-term" data-translation="Cartera">Portfolio</span> allocation is determined by a proprietary <span class="gl-term" data-translation="Riesgo">risk</span>-parity model that <span class="tm-diff-del">automatically</span><span class="tm-diff-add">dynamically</span> adjusts weights based on market <span class="tm-diff-add">volatility and macroeconomic</span> indicators.</div>
+        <div class="tm-match-target">La asignaci&oacute;n de cartera se determina mediante un modelo propietario de paridad de riesgo que ajusta autom&aacute;ticamente las ponderaciones en funci&oacute;n de los indicadores del mercado.</div>
+        <div class="tm-match-footer">
+          <button class="tm-insert-btn" onclick="insertTM(0)">Insert <span class="tm-insert-key">Alt+1</span></button>
+          <span class="tm-match-project">WIB-RPT-2024</span>
+        </div>
+      </div>
+
+      <div class="tm-match">
+        <div class="tm-match-header">
+          <span class="tm-match-pct">72% Match</span>
+          <span class="tm-match-source-label">ERI Q3 2025</span>
+        </div>
+        <div class="tm-match-text"><span class="gl-term" data-translation="Activo">Asset</span> allocation is <span class="tm-diff-del">managed</span><span class="tm-diff-add">determined</span> by a <span class="tm-diff-del">dynamic</span><span class="tm-diff-add">proprietary</span> risk-parity framework that adjusts weights based on <span class="tm-diff-del">economic</span><span class="tm-diff-add">market volatility</span> indicators.</div>
+        <div class="tm-match-target">La asignaci&oacute;n de activos se gestiona mediante un marco din&aacute;mico de paridad de riesgo que ajusta las ponderaciones seg&uacute;n indicadores econ&oacute;micos.</div>
+        <div class="tm-match-footer">
+          <button class="tm-insert-btn" onclick="insertTM(1)">Insert <span class="tm-insert-key">Alt+2</span></button>
+          <span class="tm-match-project">ERI-Q3-2025</span>
+        </div>
+      </div>
+
+      <div class="tm-match">
+        <div class="tm-match-header">
+          <span class="tm-match-pct">64% Match</span>
+          <span class="tm-match-source-label">Global TM</span>
+        </div>
+        <div class="tm-match-text">The portfolio <span class="tm-diff-del">mix</span><span class="tm-diff-add">allocation</span> is based on a risk-adjusted model that <span class="tm-diff-add">dynamically</span> rebalances according to market conditions.</div>
+        <div class="tm-match-target">La composici&oacute;n de la cartera se basa en un modelo ajustado al riesgo que se reequilibra seg&uacute;n las condiciones del mercado.</div>
+        <div class="tm-match-footer">
+          <button class="tm-insert-btn" onclick="insertTM(2)">Insert <span class="tm-insert-key">Alt+3</span></button>
+          <span class="tm-match-project">GLOBAL-TM</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- GLOSSARY -->
+    <div class="sr-panel" id="tab-glossary">
+      <div class="gl-grid">
+        <div class="gl-row"><span class="gl-en">Portfolio</span><span class="gl-arrow">&#8594;</span><span class="gl-es">Cartera</span></div>
+        <div class="gl-row"><span class="gl-en">Risk</span><span class="gl-arrow">&#8594;</span><span class="gl-es">Riesgo</span></div>
+        <div class="gl-row"><span class="gl-en">Return</span><span class="gl-arrow">&#8594;</span><span class="gl-es">Rendimiento</span></div>
+        <div class="gl-row"><span class="gl-en">Equity</span><span class="gl-arrow">&#8594;</span><span class="gl-es">Capital</span></div>
+        <div class="gl-row"><span class="gl-en">Asset</span><span class="gl-arrow">&#8594;</span><span class="gl-es">Activo</span></div>
+        <div class="gl-row"><span class="gl-en">Investment</span><span class="gl-arrow">&#8594;</span><span class="gl-es">Inversi&oacute;n</span></div>
+        <div class="gl-row"><span class="gl-en">Bond</span><span class="gl-arrow">&#8594;</span><span class="gl-es">Bono</span></div>
+        <div class="gl-row"><span class="gl-en">Dividend</span><span class="gl-arrow">&#8594;</span><span class="gl-es">Dividendo</span></div>
+        <div class="gl-row"><span class="gl-en">Benchmark</span><span class="gl-arrow">&#8594;</span><span class="gl-es">&Iacute;ndice de ref.</span></div>
+        <div class="gl-row"><span class="gl-en">Hedging</span><span class="gl-arrow">&#8594;</span><span class="gl-es">Cobertura</span></div>
+      </div>
+    </div>
+
+    <!-- CONTEXT -->
+    <div class="sr-panel" id="tab-context">
+      <div class="ctx-seg">
+        <div class="ctx-seg-num">#03 &middot; Reviewed</div>
+        <div class="ctx-text">The ARM/ERI strategy seeks long-term capital appreciation through diversified exposure to global equity, fixed income, and alternative asset classes.</div>
+        <div class="ctx-text target">La estrategia ARM/ERI busca la revalorizaci&oacute;n del capital a largo plazo mediante la exposici&oacute;n diversificada...</div>
+      </div>
+      <div class="ctx-seg ctx-current">
+        <div class="ctx-seg-num current">#04 &middot; Active (editing)</div>
+        <div class="ctx-text">Portfolio allocation is determined by a proprietary risk-parity model that dynamically adjusts weights based on market volatility and macroeconomic indicators.</div>
+      </div>
+      <div class="ctx-seg">
+        <div class="ctx-seg-num">#05 &middot; Draft</div>
+        <div class="ctx-text">As of Q3 2025, the Fund has achieved a cumulative return of 14.7%, outperforming the benchmark MSCI World Index by 320 basis points.</div>
+        <div class="ctx-text target">A partir del tercer trimestre de 2025, el Fondo ha logrado un rendimiento acumulado del 14,7%...</div>
+      </div>
+    </div>
+
+    <!-- COMMENTS -->
+    <div class="sr-panel" id="tab-comments">
+      <div class="comment">
+        <div class="comment-header">
+          <div class="comment-avatar">MR</div>
+          <span class="comment-name">Maria Rodriguez</span>
+          <span class="comment-time">2h ago</span>
+        </div>
+        <div class="comment-body">Should we use "paridad de riesgo" or "risk parity" as-is? The client's previous docs keep the English term.</div>
+      </div>
+      <div class="comment">
+        <div class="comment-header">
+          <div class="comment-avatar" style="background:var(--gold);color:var(--navy);">ET</div>
+          <span class="comment-name">EPIC Translations</span>
+          <span class="comment-time">1h ago</span>
+        </div>
+        <div class="comment-body">Use the Spanish term "paridad de riesgo" with "risk parity" in parentheses on first mention only.</div>
+      </div>
+      <div class="comment-input">
+        <input type="text" placeholder="Add a comment...">
+        <button>Send</button>
+      </div>
+    </div>
+
+    <!-- QUALITY SCORE -->
+    <div class="quality-section">
+      <div class="quality-header">
+        <span class="quality-title">Quality Score</span>
+        <span class="quality-score">87<span>/100</span></span>
+      </div>
+      <div class="quality-bars">
+        <div class="qb-row">
+          <span class="qb-label">Terminology</span>
+          <div class="qb-bar"><div class="qb-fill green" style="width:92%"></div></div>
+          <span class="qb-val">92</span>
+        </div>
+        <div class="qb-row">
+          <span class="qb-label">Fluency</span>
+          <div class="qb-bar"><div class="qb-fill blue" style="width:85%"></div></div>
+          <span class="qb-val">85</span>
+        </div>
+        <div class="qb-row">
+          <span class="qb-label">Accuracy</span>
+          <div class="qb-bar"><div class="qb-fill green" style="width:88%"></div></div>
+          <span class="qb-val">88</span>
+        </div>
+        <div class="qb-row">
+          <span class="qb-label">Style</span>
+          <div class="qb-bar"><div class="qb-fill amber" style="width:83%"></div></div>
+          <span class="qb-val">83</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BATCH ACTIONS BAR -->
+<div class="batch-bar" id="batchBar">
+  <span><span class="batch-count" id="batchCount">0</span> segments selected</span>
+  <button class="batch-btn approve">Approve Selected</button>
+  <button class="batch-btn flag">Flag Selected</button>
+</div>
+
+<script>
+// Tab switching
+function switchTab(btn, panelId) {
+  document.querySelectorAll('.sr-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sr-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// TM insertion
+function insertTM(idx) {
+  const targets = document.querySelectorAll('.tm-match-target');
+  const textarea = document.querySelector('.seg-target-edit');
+  if (textarea && targets[idx]) {
+    textarea.value = targets[idx].textContent;
+    textarea.focus();
+  }
+}
+
+// Multi-select batch bar
+document.querySelectorAll('.seg-check input[type="checkbox"]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    const checked = document.querySelectorAll('.seg-check input:checked').length;
+    const bar = document.getElementById('batchBar');
+    document.getElementById('batchCount').textContent = checked;
+    if (checked > 0) {
+      bar.classList.add('show');
+    } else {
+      bar.classList.remove('show');
+    }
+  });
+});
+
+// Close export dropdown on outside click
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.tb-export-wrap')) {
+    document.querySelector('.export-dropdown').classList.remove('show');
+  }
+});
+
+// Filter button switching
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>
